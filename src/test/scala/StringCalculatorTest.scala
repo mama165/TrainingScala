@@ -44,7 +44,7 @@ class StringCalculatorTest extends WordSpec with Matchers {
     }
 
 
-    "throw an exception" in {
+    "throw an exception when negative numbers are found" in {
       val integersAsString = Table(
         ("input", "expected"),
         ("1,-2", "Negative number are not allowed : -2"),
