@@ -1,0 +1,10 @@
+.ivy-home/
+target/
+.DS_Store
+configurations/envs/local/perso_conf.env
+.idea/*
+!.idea/runConfigurations
+.idea/runConfigurations/*
+!.idea/runConfigurations/local_*.xml
+kanela*
+
