@@ -1,8 +1,9 @@
-import StringCalculator.StringCalculator
-import org.scalatest.{Matchers, WordSpec}
-import org.scalatest.prop.TableDrivenPropertyChecks._
+package stringCalculator
 
-class StringCalculatorTest extends WordSpec with Matchers {
+import org.scalatest.prop.TableDrivenPropertyChecks._
+import org.scalatest.{Matchers, WordSpec}
+
+class StringCalculatorSpec extends WordSpec with Matchers {
   val calculator = new StringCalculator
 
   "A calculator should" should {
@@ -29,7 +30,7 @@ class StringCalculatorTest extends WordSpec with Matchers {
         calculator.add(input) shouldBe expected
       }
     }
-    "sum integers separated by a custom separator" in {
+    "sum integers separated by a custom separator (character)" in {
       val integersAsString = Table(
         ("input", "expected"),
         ("//;\n1;2", 3),
@@ -57,6 +58,29 @@ class StringCalculatorTest extends WordSpec with Matchers {
         the[RuntimeException] thrownBy {
           calculator.add(input)
         } should have message (messageExpected)
+      }
+    }
+
+    "ignore number greater than 1000" in {
+      val integersAsString = Table(
+        ("input", "expected"),
+        ("15,1,3,1005", 19),
+        ("//;\n1;2;1001", 3)
+      )
+
+      forAll(integersAsString) { (input: String, expected: Int) =>
+        calculator.add(input) shouldBe expected
+      }
+    }
+
+    "sum integers separated by a custom separator (string)" in {
+      val integersAsString = Table(
+        ("input", "expected"),
+        ("//[***]\n1***2***3", 6)
+      )
+
+      forAll(integersAsString) { (input: String, expected: Int) =>
+        calculator.add(input) shouldBe expected
       }
     }
   }
