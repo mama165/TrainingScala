@@ -1,6 +1,6 @@
 package bankAccount
 
-import java.time.{Clock, Instant}
+import java.time.Clock
 
 import bankAccount.AccountError.{AmountMalformedError, AmountNegativeError, NotEnoughMoneyError}
 import bankAccount.Types.Amount
@@ -10,10 +10,10 @@ import scala.util.Try
 trait AccountServiceApi {
   def deposit(accountID: Long, strAmount: String): Unit
 
-  def withdraw(accountId: Long, strAmount: String): Unit
+  def withdrawal(accountId: Long, strAmount: String): Unit
 }
 
-class AccountService(operationRepository: OperationRepository, clock: Clock) extends AccountServiceApi {
+class AccountService(operationRepository: OperationRepository)(implicit clock: Clock) extends AccountServiceApi {
 
   def getAmount(strAmount: String): Either[Throwable, Amount] = {
     Try(strAmount.toLong).toEither
@@ -21,8 +21,8 @@ class AccountService(operationRepository: OperationRepository, clock: Clock) ext
 
   def validateAmount(accountID: Long, strAmount: String): Either[AccountError, Amount] = {
     for {
-      amount <- getAmount(strAmount).left.map(AmountMalformedError)
-      _ <- Either.cond(amount > 0, (), AmountNegativeError(amount))
+      amount <- getAmount(strAmount).left.map(_ => AmountMalformedError(strAmount))
+      _ <- Either.cond(amount > 0, (), AmountNegativeError(strAmount))
     } yield amount
   }
 
@@ -32,58 +32,33 @@ class AccountService(operationRepository: OperationRepository, clock: Clock) ext
         case AmountMalformedError(_) => println("The amount is malformed")
         case AmountNegativeError(negativeAmount) => println(s"The amount is negative : $negativeAmount")
       }
-      case Right(amount) => operationRepository.add(OperationWithdrawal(accountID, amount, Instant.now(clock)))
+      case Right(amount) => operationRepository.add(OperationDeposit(accountID, amount, clock))
     }
   }
 
-  //  def checkForBalance(accountID: Long): Either[NotEnoughMoneyError, Long] = {
-  //
-  //  }
-
-
-  override def withdraw(accountID: Long, strAmount: String) = {
-    //    validateAmount(accountID, strAmount) match {
-    //      case Left(e) => e match {
-    //        case AmountMalformedError(_) => println("The amount is malformed")
-    //        case AmountNegativeError(negativeAmount) => println(s"The amount is negative : $negativeAmount")
-    //      }
-    //      //      case Right(amount) => operationRepository.add(Operation(accountID, amount, Instant.now(clock)))
-    //      case Right(amount) => for {
-    //        operation <- Either.cond(computeBalance(accountID) > amount, (), NotEnoughMoneyError(amount))
-    //      } yield operation match {
-    //        case Left(operation) => e
-    //        case Right(_) => operationRepository.add(OperationDeposit(accountID, amount, Instant.now(Clock)))
-    //      }
-    //    }
-
-    val result = for {
+  override def withdrawal(accountID: Long, strAmount: String): Unit = {
+    val resultOfOperations = for {
       amount <- validateAmount(accountID, strAmount)
-      _ <- Either.cond(computeBalance(accountID) > amount, (), NotEnoughMoneyError(amount))
-    } yield operationRepository.add(OperationWithdrawal(accountID, amount, Instant.now(clock)))
+      _ <- Either.cond(computeBalance(accountID) >= amount, (), NotEnoughMoneyError(strAmount))
+    } yield amount
 
-    result match {
-      case Left(AmountMalformedError(e)) => ???
-      case Left(AmountNegativeError(e)) => ???
-      case Left(NotEnoughMoneyError(e)) => ???
-      case Right(_) => ???
+    resultOfOperations match {
+      case Left(AmountMalformedError(amount)) => println("The amount is malformed : " + amount)
+      case Left(AmountNegativeError(amount)) => println("The amount is negative : " + amount)
+      case Left(NotEnoughMoneyError(amount)) => println("Withdrawal impossible : " + amount)
+      case Right(amount) => operationRepository.add(OperationWithdrawal(accountID, amount, clock))
     }
-
-
   }
-
-
-  val nums = List(1, 2, 3, 4)
-  val sum = nums.foldLeft(0) {
-    (acc, num) => acc + num
-  }
-
 
   def computeBalance(accountID: Long) = {
     val operations = operationRepository.findAll(accountID)
-    //    operations.foldLeft(0, {
-    //      ( o1, o2) =>  )
-    //    }
-    0L
+    operations.foldLeft(0L) {
+      (balance, operation) =>
+        operation match {
+          case OperationDeposit(_, amount, _) => balance + amount
+          case OperationWithdrawal(_, amount, _) => balance - amount
+        }
+    }
   }
 
 }
