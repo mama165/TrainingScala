@@ -1,7 +1,5 @@
 package bankAccount
 
-import bankAccount.Types.Amount
-
 sealed trait AccountError
 
 object AccountError {

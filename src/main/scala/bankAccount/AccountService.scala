@@ -11,6 +11,8 @@ trait AccountServiceApi {
   def deposit(accountID: Long, strAmount: String): Unit
 
   def withdrawal(accountId: Long, strAmount: String): Unit
+
+  def printStatements(operationPrinter:OperationPrinter, accountID: Long): Unit
 }
 
 class AccountService(operationRepository: OperationRepository)(implicit clock: Clock) extends AccountServiceApi {
@@ -28,7 +30,7 @@ class AccountService(operationRepository: OperationRepository)(implicit clock: C
 
   override def deposit(accountID: Long, strAmount: String): Unit = {
     validateAmount(accountID, strAmount) match {
-      case Left(e) => e match {
+      case Left(amountError) => amountError match {
         case AmountMalformedError(_) => println("The amount is malformed")
         case AmountNegativeError(negativeAmount) => println(s"The amount is negative : $negativeAmount")
       }
@@ -50,7 +52,12 @@ class AccountService(operationRepository: OperationRepository)(implicit clock: C
     }
   }
 
-  def computeBalance(accountID: Long) = {
+  override def printStatements(operationPrinter: OperationPrinter, accountID: Long): Unit = {
+    val operations = operationRepository.findAll(accountID)
+    operationPrinter.print(operations, computeBalance(accountID))
+  }
+
+  def computeBalance(accountID: Long): Long = {
     val operations = operationRepository.findAll(accountID)
     operations.foldLeft(0L) {
       (balance, operation) =>
@@ -60,5 +67,4 @@ class AccountService(operationRepository: OperationRepository)(implicit clock: C
         }
     }
   }
-
 }
