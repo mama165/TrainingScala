@@ -2,16 +2,16 @@ package decisionTree
 
 object DecisionTree extends App {
 
-  sealed class BaseLine(data: String)
+  sealed abstract class BaseLine(val data: String)
 
-  case class ParentLine(data: String, strCond: String, yes: String, no: String) extends BaseLine(data: String)
-  case class LeafLine(data: String, strValue: String) extends BaseLine(data: String)
+  case class ParentLine(override val data: String, strCond: String, yes: String, no: String) extends BaseLine(data)
+  case class LeafLine(override val data: String, value: String) extends BaseLine(data)
 
-  sealed class Node
+  sealed abstract class Node(val  value: String)
 
-  case class ParentNode(strCond: String, nodeYes: Option[Node], nodeNo: Option[Node]) extends Node
+  case class ParentNode(override val value: String, nodeYes: Node, nodeNo: Node) extends Node(value)
 
-  case class LeafNode(value: String) extends Node
+  case class LeafNode(override val value: String) extends Node(value)
 
   val lines = List(
     "0:[device_type=pc||or||browser=7] yes=2,no=1",
@@ -37,7 +37,46 @@ object DecisionTree extends App {
     "13:leaf=0.000999001",
   )
 
-  val nodes = buildBaseLines(lines)
+  val baseLines: List[BaseLine] = buildBaseLines(lines)
+
+  val map: Map[String, BaseLine] = baseLines.map { baseLine => (baseLine.data, baseLine) }.toMap
+
+  val node: Node = buildRecursively(map, baseLines.head)
+
+  ???
+
+  def buildRecursively(map: Map[String, BaseLine], rootLine: BaseLine): Node = {
+    rootLine match {
+      case parentLine: ParentLine => {
+        val root = build(map, parentLine)
+        root
+      }
+      case LeafLine(_, _) => ???
+    }
+  }
+
+
+  def build(map: Map[String, BaseLine], baseLine: BaseLine) : Node = {
+    baseLine match {
+      case parentLine: ParentLine =>
+        val yes: Node = buildNode(map, parentLine.yes)
+        val no: Node = buildNode(map, parentLine.no)
+        ParentNode(parentLine.strCond, yes, no)
+
+      case leafLine: LeafLine => LeafNode(leafLine.value)
+
+      case _ => ???
+    }
+  }
+
+  def buildNode(map: Map[String, BaseLine], index: String): Node = {
+    val line = map(index)
+
+    line match {
+      case parentLine: ParentLine => build(map, parentLine)
+      case leafLine: LeafLine  => build(map, leafLine)
+    }
+  }
 
   def buildBaseLines(lines: List[String]): List[BaseLine] = {
     val regexParent = "([0-9]+):\\[(.*?)\\] (yes)=([0-9]+),(no)=([0-9]+)".r
@@ -48,10 +87,5 @@ object DecisionTree extends App {
       case regexLeaf(data, _, strValue) => LeafLine(data, strValue)
       case _ => ???
     }
-  }
-
-  def buildNodes(baseLine: List[BaseLine]) : List[Node] = {
-    
-    ???
   }
 }
