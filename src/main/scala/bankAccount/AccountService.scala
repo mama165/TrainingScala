@@ -17,16 +17,15 @@ trait AccountServiceApi {
 
 class AccountService(operationRepository: OperationRepository)(implicit clock: Clock) extends AccountServiceApi {
 
-  def getAmount(strAmount: String): Either[Throwable, Amount] = {
-    Try(strAmount.toLong).toEither
+  def getAmount(strAmount: String): Either[AmountMalformedError, Amount] = {
+    Try(strAmount.toLong).toEither.left.map(_=> AmountMalformedError(strAmount))
   }
 
-  def validateAmount(accountID: Long, strAmount: String): Either[AccountError, Amount] = {
-    for {
-      amount <- getAmount(strAmount).left.map(_ => AmountMalformedError(strAmount))
-      _ <- Either.cond(amount > 0, (), AmountNegativeError(strAmount))
-    } yield amount
-  }
+  def validateAmount(accountID: Long, strAmount: String): Either[AccountError, Amount] = for {
+//    amount <- getAmount(strAmount).left.map(_ => AmountMalformedError(strAmount))
+    amount <- getAmount(strAmount)
+    _ <- Either.cond(amount > 0, (), AmountNegativeError(strAmount))
+  } yield amount
 
   override def deposit(accountID: Long, strAmount: String): Unit = {
     validateAmount(accountID, strAmount) match {
