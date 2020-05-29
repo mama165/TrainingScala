@@ -1,14 +1,15 @@
 package stringCalculator
 
 import scala.util.Try
+import scala.util.matching.Regex
 
 class StringCalculator {
   val COMMA_SEPARATOR = ','
   val DELIMITER = ",|\n"
   val EMPTY_VALUE = ""
+  val pattern: Regex = raw"//.+\n".r
 
   def add(integers: String): Int = {
-    val pattern = raw"//.+\n".r
 
     pattern.findFirstIn(integers) match {
       case Some(_) =>
@@ -19,12 +20,16 @@ class StringCalculator {
     }
   }
 
-  private def sumIntegersWithDelimiter(input: String, delimiter: String): Int = {
-    val list = input.split(delimiter)
+  private def sumIntegersWithDelimiter(input: String,
+                                       delimiter: String): Int = {
+    val list = input
+      .split(delimiter)
       .flatMap(strInt => Try(strInt.toInt).toOption)
       .toList
     val (negativeInts, positiveInts) = list.partition(_ < 0)
-    if (negativeInts.nonEmpty) throw new RuntimeException(s"Negative number are not allowed : ${negativeInts.mkString(", ")}")
+    if (negativeInts.nonEmpty)
+      throw new RuntimeException(
+        s"Negative number are not allowed : ${negativeInts.mkString(", ")}")
     else positiveInts.filter(_ < 1000).sum
   }
 }

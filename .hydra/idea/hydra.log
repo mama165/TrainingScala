@@ -1,0 +1,25 @@
+2020-05-18 17:17:20.758 INFO  c.t.h.c.c.ParsedLogicalPackage$OutlineParseCompiler - Outline parse 10 files in 1 roots took 33 ms.
+2020-05-18 17:17:20.765 INFO  c.t.hydra.Hydra - Loaded pickle store with 0 entries.
+2020-05-18 17:17:20.766 INFO  c.t.hydra.Hydra - Hydra Scala version: 2.13.1-hydra40
+2020-05-18 17:17:20.768 INFO  c.t.hydra.Hydra - Hydra version:       2.2.2
+2020-05-18 17:17:20.768 INFO  c.t.hydra.Hydra - Compiling project:   TrainingScala/main
+2020-05-18 17:17:20.796 INFO  c.t.h.FullBuildDetector$ - Recursive - Full build detection took 25 ms.
+2020-05-18 17:17:20.796 INFO  c.t.hydra.Hydra - Clean build: true
+2020-05-18 17:17:21.188 INFO  c.t.h.l.ActivatedLicenseText - ActivatedLicenseText.validate took 317 ms.
+2020-05-18 17:17:21.189 ERROR c.t.h.l.HydraLicenseChecker - Hydra license expired. Please renew your license or contact support@triplequote.com
+2020-05-18 17:17:28.702 INFO  c.t.h.c.c.ParsedLogicalPackage$OutlineParseCompiler - Outline parse 10 files in 1 roots took 9 ms.
+2020-05-18 17:17:28.702 INFO  c.t.hydra.Hydra - Loaded pickle store with 0 entries.
+2020-05-18 17:17:28.702 INFO  c.t.hydra.Hydra - Hydra Scala version: 2.13.1-hydra40
+2020-05-18 17:17:28.702 INFO  c.t.hydra.Hydra - Hydra version:       2.2.2
+2020-05-18 17:17:28.702 INFO  c.t.hydra.Hydra - Compiling project:   TrainingScala/main
+2020-05-18 17:17:28.704 INFO  c.t.h.FullBuildDetector$ - Recursive - Full build detection took 2 ms.
+2020-05-18 17:17:28.704 INFO  c.t.hydra.Hydra - Clean build: true
+2020-05-18 17:17:28.709 ERROR c.t.h.l.HydraLicenseChecker - Hydra license expired. Please renew your license or contact support@triplequote.com
+2020-05-18 17:17:41.340 INFO  c.t.h.c.c.ParsedLogicalPackage$OutlineParseCompiler - Outline parse 10 files in 1 roots took 8 ms.
+2020-05-18 17:17:41.340 INFO  c.t.hydra.Hydra - Loaded pickle store with 0 entries.
+2020-05-18 17:17:41.340 INFO  c.t.hydra.Hydra - Hydra Scala version: 2.13.1-hydra40
+2020-05-18 17:17:41.340 INFO  c.t.hydra.Hydra - Hydra version:       2.2.2
+2020-05-18 17:17:41.340 INFO  c.t.hydra.Hydra - Compiling project:   TrainingScala/main
+2020-05-18 17:17:41.342 INFO  c.t.h.FullBuildDetector$ - Recursive - Full build detection took 2 ms.
+2020-05-18 17:17:41.342 INFO  c.t.hydra.Hydra - Clean build: true
+2020-05-18 17:17:41.346 ERROR c.t.h.l.HydraLicenseChecker - Hydra license expired. Please renew your license or contact support@triplequote.com

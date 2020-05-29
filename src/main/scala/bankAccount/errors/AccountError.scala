@@ -1,4 +1,4 @@
-package bankAccount
+package bankAccount.errors
 
 sealed trait AccountError
 
